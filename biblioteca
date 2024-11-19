@@ -1,0 +1,77 @@
+
+class Libro:
+    def __init__(self, titulo: str, autor: str, cantidad: int):
+        self.titulo = titulo
+        self.autor = autor
+        self.cantidad = cantidad
+        self.prestados = 0
+    
+    def esta_disponible(self) -> bool:
+        """Determina si hay ejemplares disponibles para prestar."""
+        return self.cantidad > self.prestados
+    
+    def prestar(self) -> bool:
+        """Realiza el préstamo de un libro si hay disponibilidad."""
+        if self.esta_disponible():
+            self.prestados += 1
+            return True
+        return False
+    
+    def devolver(self) -> bool:
+        """Regresa un libro prestado."""
+        if self.prestados > 0:
+            self.prestados -= 1
+            return True
+        return False
+    
+    def __str__(self):
+        return f"{self.titulo} de {self.autor}"
+
+class Usuario:
+    def __init__(self, nombre: str, id_usuario: str):
+        self.nombre = nombre
+        self.id_usuario = id_usuario
+        self.libros_prestados: List[Libro] = []
+    
+    def prestar_libro(self, libro: Libro) -> bool:
+        """Permite al usuario prestar un libro."""
+        if libro.prestar():
+            self.libros_prestados.append(libro)
+            return True
+        return False
+    
+    def devolver_libro(self, libro: Libro) -> bool:
+        """Permite al usuario devolver un libro."""
+        if libro.devolver():
+            self.libros_prestados.remove(libro)
+            return True
+        return False
+    
+    def obtener_libros_prestados(self) -> List[str]:
+        """Devuelve una lista con los títulos de los libros prestados."""
+        return [libro.titulo for libro in self.libros_prestados]
+
+class Biblioteca:
+    def __init__(self, nombre: str):
+        self.nombre = nombre
+        self.libros: List[Libro] = []
+        self.usuarios: List[Usuario] = []
+    
+    def agregar_libro(self, libro: Libro) -> None:
+        """Agrega un nuevo libro a la biblioteca."""
+        self.libros.append(libro)
+    
+    def registrar_usuario(self, usuario: Usuario) -> None:
+        """Registra un nuevo usuario en la biblioteca."""
+        self.usuarios.append(usuario)
+    
+    def buscar_libro(self, titulo: str) -> Libro:
+        """Busca un libro por su título."""
+        for libro in self.libros:
+            if libro.titulo.lower() == titulo.lower():
+                return libro
+        return None
+    
+    def obtener_libros_disponibles(self) -> List[str]:
+        """Devuelve una lista de títulos de libros disponibles para préstamo."""
+        return [libro.titulo for libro in self.libros if libro.esta_disponible()]
